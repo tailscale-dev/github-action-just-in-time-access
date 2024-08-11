@@ -1,0 +1,35 @@
+name: Tailscale - Just-in-time Access
+
+on:
+  workflow_dispatch:
+    inputs:
+      source-device:
+        description: FQDN of the source device (e.g. cameron.tsjustworks.ts.net)
+        required: true
+        type: string
+      posture:
+        description: Which posture?
+        required: true
+        type: choice
+        options: 
+        - custom:prodAcccess
+      amount-of-time:
+        description: For how long?
+        required: true
+        type: choice
+        options: 
+        - "1 hour"
+        - "12 hours"
+        - "1 day"
+
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Preview
+      run: |
+        echo "Source device: ${{ github.event.inputs.source-device }}"
+        echo "Posture: ${{ github.event.inputs.posture }}"
+        echo "Amount of time: ${{ github.event.inputs.amount-of-time }}"
