@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Request details
+    - name: 'Tailscale: Details of Request'
       run: |
         echo '####################################################################'
         echo '# Source device:  ${{ github.event.inputs.source-device }}'
@@ -46,14 +46,14 @@ jobs:
     needs: [request]
 
     steps:
-    - name: Get API access token
+    - name: 'Tailscale: Get access token from OAuth Client'
       run: |
         TAILSCALE_ACCESS_TOKEN=$(curl --silent --data 'client_id=${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}' --data 'client_secret=${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}' \
             https://api.tailscale.com/api/v2/oauth/token \
             | jq -r '.access_token')
         echo "::add-mask::$TAILSCALE_ACCESS_TOKEN"
         echo "TAILSCALE_ACCESS_TOKEN=$TAILSCALE_ACCESS_TOKEN" >> $GITHUB_ENV
-    - name: Find device ID from FQDN
+    - name: 'Tailscale: Find device ID from FQDN'
       run: |
         TAILSCALE_NODE_ID=$(curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
             https://api.tailscale.com/api/v2/tailnet/-/devices \
@@ -61,13 +61,13 @@ jobs:
         echo "::notice::Found device id [${TAILSCALE_NODE_ID}] from hostname [${{ github.event.inputs.source-device }}]"
         echo "TAILSCALE_NODE_ID=${TAILSCALE_NODE_ID}" \
             >> $GITHUB_ENV
-    - name: Calculate expiry
+    - name: 'Tailscale: Calculate expiry'
       run: |
         TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY=$(date -u -d '${{ github.event.inputs.amount-of-time }}' +'%Y-%m-%dT%H:%M:%SZ')
         echo "::notice::Setting attribute expiry to [${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}] - [${{ github.event.inputs.amount-of-time }}] from now"
         echo "TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY=${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}" \
             >> $GITHUB_ENV
-    - name: Set device attribute
+    - name: 'Tailscale: Set device attribute'
       run: |
         curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
             --header 'Content-Type: application/json' \
