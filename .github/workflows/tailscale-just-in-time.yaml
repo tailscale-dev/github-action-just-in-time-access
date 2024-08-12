@@ -34,10 +34,10 @@ jobs:
     - name: 'Tailscale: Details of Request'
       run: |
         echo '####################################################################'
-        echo '#     Source device:  ${{ github.event.inputs.source-device }}'
-        echo '#     Posture:        ${{ github.event.inputs.posture }}'
+        echo '#      Source device: ${{ github.event.inputs.source-device }}'
+        echo '#            Posture: ${{ github.event.inputs.posture }}'
         echo '#     Amount of time: ${{ github.event.inputs.amount-of-time }}'
-        echo '#     Reason:         ${{ github.event.inputs.reason }}'
+        echo '#             Reason: ${{ github.event.inputs.reason }}'
         echo '####################################################################'
 
   approve:
@@ -58,7 +58,8 @@ jobs:
         TAILSCALE_NODE_ID=$(curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
             https://api.tailscale.com/api/v2/tailnet/-/devices \
             | jq -r '.devices[] | select(.name == "${{ github.event.inputs.source-device }}") | .nodeId')
-        echo "::notice::Found device id [${TAILSCALE_NODE_ID}] from hostname [${{ github.event.inputs.source-device }}]"
+        [[ -z $TAILSCALE_NODE_ID ]] && echo "No device id found for hostname [${{ github.event.inputs.source-device }}]" && exit 1
+        echo "::notice::Found device id [${TAILSCALE_NODE_ID}] for hostname [${{ github.event.inputs.source-device }}]"
         echo "TAILSCALE_NODE_ID=${TAILSCALE_NODE_ID}" \
             >> $GITHUB_ENV
     - name: 'Tailscale: Calculate expiry'
