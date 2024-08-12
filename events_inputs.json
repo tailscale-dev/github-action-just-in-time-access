@@ -1,9 +1,0 @@
-{
-  "action": "workflow_dispatch",
-  "inputs": {
-      "source-device": "cameron.tsjustworks.ts.net",
-      "posture": "custom:prodAcccess",
-      "amount-of-time": "12 hours",
-      "reason": "need to test something"
-  }
-}

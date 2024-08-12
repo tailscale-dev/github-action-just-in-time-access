@@ -10,3 +10,16 @@ Requires the following environment variables:
 TAILSCALE_OAUTH_CLIENT_ID
 TAILSCALE_OAUTH_CLIENT_SECRET
 ```
+
+## Local testing
+
+Test locally using <https://github.com/nektos/act/>.
+
+```shell
+act workflow_dispatch \
+    -s TAILSCALE_OAUTH_CLIENT_ID -s TAILSCALE_OAUTH_CLIENT_SECRET \
+    --input source-device='cameron.tsjustworks.ts.net' \
+    --input posture='custom:prodAcccess' \
+    --input amount-of-time='12 hours' \
+    --input reason='need to test something'
+```
