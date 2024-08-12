@@ -23,7 +23,7 @@ on:
         - '1 day'
 
 jobs:
-  stage:
+  preview:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,6 +36,7 @@ jobs:
   approve:
     runs-on: ubuntu-latest
     environment: tailscale-prod
+    needs: [preview]
 
     steps:
     - name: Get API access token
