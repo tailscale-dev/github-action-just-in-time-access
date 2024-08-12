@@ -23,7 +23,7 @@ on:
         - '1 day'
 
 jobs:
-  run:
+  stage:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,15 +32,21 @@ jobs:
         echo 'Source device: ${{ github.event.inputs.source-device }}'
         echo 'Posture: ${{ github.event.inputs.posture }}'
         echo 'Amount of time: ${{ github.event.inputs.amount-of-time }}'
+
+  approve:
+    runs-on: ubuntu-latest
+    environment: tailscale-prod
+
+    steps:
     - name: Get API access token
       run: |
-         curl -s -d 'client_id=${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}' -d 'client_secret=${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}' \
+         curl --silent --data 'client_id=${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}' --data 'client_secret=${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}' \
            https://api.tailscale.com/api/v2/oauth/token \
            | jq -r '"TAILSCALE_ACCESS_TOKEN=" + .access_token' \
            >> $GITHUB_ENV
     - name: Find device ID
       run: |
-        curl -s --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
+        curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
           https://api.tailscale.com/api/v2/tailnet/-/devices \
           | jq -r '.devices[] | select(.name == "${{ github.event.inputs.source-device }}") | "TAILSCALE_NODE_ID=" + .nodeId' \
           >> $GITHUB_ENV
@@ -50,7 +56,7 @@ jobs:
           >> $GITHUB_ENV
     - name: Set device attribute
       run: |
-        curl -v --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
+        curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
           --header 'Content-Type: application/json' \
           --data "{ \"value\": \"true\", \"expiry\": \"${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}\" }" \
           "https://api.tailscale.com/api/v2/device/${TAILSCALE_NODE_ID}/attributes/${{ github.event.inputs.posture }}"
