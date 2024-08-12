@@ -61,7 +61,9 @@ jobs:
             >> $GITHUB_ENV
     - name: Calculate expiry
       run: |
-        echo "TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY=$(date -u -d '+1 hour' +'%Y-%m-%dT%H:%M:%SZ')" \
+        TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY=$(date -u -d '${{ github.event.inputs.amount-of-time }}' +'%Y-%m-%dT%H:%M:%SZ')
+        echo "::notice::Setting attribute expiry to [${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}] - [${{ github.event.inputs.amount-of-time }}] from now"
+        echo "TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY=${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}" \
             >> $GITHUB_ENV
     - name: Set device attribute
       run: |
