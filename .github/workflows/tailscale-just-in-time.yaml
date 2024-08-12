@@ -55,9 +55,11 @@ jobs:
         echo "TAILSCALE_ACCESS_TOKEN=$TAILSCALE_ACCESS_TOKEN" >> $GITHUB_ENV
     - name: Find device ID from FQDN
       run: |
-        curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
+        TAILSCALE_NODE_ID=$(curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
             https://api.tailscale.com/api/v2/tailnet/-/devices \
-            | jq -r '.devices[] | select(.name == "${{ github.event.inputs.source-device }}") | "TAILSCALE_NODE_ID=" + .nodeId' \
+            | jq -r '.devices[] | select(.name == "${{ github.event.inputs.source-device }}") | .nodeId')
+        echo "::notice::Found device id [${TAILSCALE_NODE_ID}] from hostname [${{ github.event.inputs.source-device }}]"
+        echo "TAILSCALE_NODE_ID=${TAILSCALE_NODE_ID}" \
             >> $GITHUB_ENV
     - name: Calculate expiry
       run: |
