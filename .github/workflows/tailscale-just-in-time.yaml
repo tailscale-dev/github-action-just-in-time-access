@@ -1,4 +1,4 @@
-name: Tailscale - Just-in-time Access
+name: 'Tailscale: Just-in-time Access'
 
 on:
   workflow_dispatch:
