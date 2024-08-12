@@ -34,10 +34,10 @@ jobs:
     - name: 'Tailscale: Details of Request'
       run: |
         echo '####################################################################'
-        echo '# Source device:  ${{ github.event.inputs.source-device }}'
-        echo '# Posture:        ${{ github.event.inputs.posture }}'
-        echo '# Amount of time: ${{ github.event.inputs.amount-of-time }}'
-        echo '# Reason:         ${{ github.event.inputs.reason }}'
+        echo '#     Source device:  ${{ github.event.inputs.source-device }}'
+        echo '#     Posture:        ${{ github.event.inputs.posture }}'
+        echo '#     Amount of time: ${{ github.event.inputs.amount-of-time }}'
+        echo '#     Reason:         ${{ github.event.inputs.reason }}'
         echo '####################################################################'
 
   approve:
