@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source-device:
-        description: FQDN of the source device (e.g. cameron.tsjustworks.ts.net)
+        description: FQDN of the source device (e.g. cameron.tail0123456.ts.net)
         required: true
         type: string
       posture:

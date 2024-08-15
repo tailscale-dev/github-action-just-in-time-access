@@ -1,4 +1,4 @@
-# tailscale-just-in-time-github-action
+# github-action-just-in-time-access
 
 [![status: experimental](https://img.shields.io/badge/status-experimental-blue)](https://tailscale.com/kb/1167/release-stages/#experimental)
 
@@ -27,13 +27,13 @@ A GitHub Action allowing Tailscale users to request and approve just-in-time acc
 
 ## Local testing
 
-Test locally using <https://github.com/nektos/act/>.
+Test locally using <https://github.com/nektos/act/>. Note: `act` will move directly from `request` to `approve` without waiting for manual approval.
 
 ```shell
 act workflow_dispatch \
     -s TAILSCALE_OAUTH_CLIENT_ID -s TAILSCALE_OAUTH_CLIENT_SECRET \
-    --input source-device='cameron.tsjustworks.ts.net' \
+    --input source-device='cameron.tail0123456.ts.net' \
     --input posture='custom:prodAcccess=true' \
     --input amount-of-time='12 hours' \
-    --input reason='need to test something'
+    --input reason='testing locally with act'
 ```
