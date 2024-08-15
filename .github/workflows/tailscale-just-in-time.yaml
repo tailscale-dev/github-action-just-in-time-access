@@ -12,7 +12,7 @@ on:
         required: true
         type: choice
         options: 
-        - custom:prodAcccess
+        - custom:prodAcccess=true
       amount-of-time:
         description: For how long?
         required: true
@@ -48,14 +48,14 @@ jobs:
     steps:
     - name: 'Tailscale: Get access token from OAuth Client'
       run: |
-        TAILSCALE_ACCESS_TOKEN=$(curl --silent --data 'client_id=${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}' --data 'client_secret=${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}' \
+        TAILSCALE_ACCESS_TOKEN=$(curl --silent --fail --show-error --data 'client_id=${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}' --data 'client_secret=${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}' \
             https://api.tailscale.com/api/v2/oauth/token \
             | jq -r '.access_token')
         echo "::add-mask::$TAILSCALE_ACCESS_TOKEN"
         echo "TAILSCALE_ACCESS_TOKEN=$TAILSCALE_ACCESS_TOKEN" >> $GITHUB_ENV
     - name: 'Tailscale: Find device ID from FQDN'
       run: |
-        TAILSCALE_NODE_ID=$(curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
+        TAILSCALE_NODE_ID=$(curl --silent --fail --show-error --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
             https://api.tailscale.com/api/v2/tailnet/-/devices \
             | jq -r '.devices[] | select(.name == "${{ github.event.inputs.source-device }}") | .nodeId')
         [[ -z $TAILSCALE_NODE_ID ]] && echo "No device id found for hostname [${{ github.event.inputs.source-device }}]" && exit 1
@@ -70,7 +70,9 @@ jobs:
             >> $GITHUB_ENV
     - name: 'Tailscale: Set device attribute'
       run: |
-        curl --silent --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
+        TAILSCALE_DEVICE_ATTRIBUTE_KEY=$(echo "${{ github.event.inputs.posture }}" | cut -d'=' -f1)
+        TAILSCALE_DEVICE_ATTRIBUTE_VALUE=$(echo "${{ github.event.inputs.posture }}" | cut -d'=' -f2)
+        curl --silent --fail --show-error --header "Authorization: Bearer $TAILSCALE_ACCESS_TOKEN" \
             --header 'Content-Type: application/json' \
-            --data "{ \"value\": \"true\", \"expiry\": \"${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}\" }" \
-            "https://api.tailscale.com/api/v2/device/${TAILSCALE_NODE_ID}/attributes/${{ github.event.inputs.posture }}"
+            --data "{ \"value\": \"${TAILSCALE_DEVICE_ATTRIBUTE_VALUE}\", \"expiry\": \"${TAILSCALE_DEVICE_ATTRIBUTE_EXPIRY}\" }" \
+            "https://api.tailscale.com/api/v2/device/${TAILSCALE_NODE_ID}/attributes/${TAILSCALE_DEVICE_ATTRIBUTE_KEY}"

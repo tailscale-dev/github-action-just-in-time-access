@@ -33,7 +33,7 @@ Test locally using <https://github.com/nektos/act/>.
 act workflow_dispatch \
     -s TAILSCALE_OAUTH_CLIENT_ID -s TAILSCALE_OAUTH_CLIENT_SECRET \
     --input source-device='cameron.tsjustworks.ts.net' \
-    --input posture='custom:prodAcccess' \
+    --input posture='custom:prodAcccess=true' \
     --input amount-of-time='12 hours' \
     --input reason='need to test something'
 ```
